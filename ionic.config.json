@@ -1,0 +1,7 @@
+{
+  "name": "ionic-angular-home-automation",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
