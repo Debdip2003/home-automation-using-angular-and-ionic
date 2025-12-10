@@ -1,0 +1,19 @@
+ion-header {
+  ion-toolbar {
+    --background: transparent;
+  }
+}
+
+ion-content {
+  ion-item {
+    --background: transparent;
+  }
+}
+
+ion-item-divider {
+  background-color: transparent;
+  border-bottom: none;
+  ion-label {
+    font-size: 1.2rem;
+  }
+}

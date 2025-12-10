@@ -1,0 +1,13 @@
+@defer(when roomData){
+<ion-card>
+  <ion-item lines="none" [routerLink]="['room-detail', roomData()?.id]">
+    <ion-icon
+      name="{{ roomData()?.icon }}-outline"
+      size="large"
+      color="primary"
+      slot="start"
+    ></ion-icon>
+    <ion-label>{{ roomData()?.name }}</ion-label>
+  </ion-item>
+</ion-card>
+}
