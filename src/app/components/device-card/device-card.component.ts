@@ -1,10 +1,10 @@
-import { Component, input, output, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import {
   IonItem,
   IonCard,
   IonIcon,
   IonLabel,
-  IonToggle
+  IonToggle,
 } from '@ionic/angular/standalone';
 import { Device } from 'src/app/interface/device';
 
@@ -12,23 +12,31 @@ import { Device } from 'src/app/interface/device';
   selector: 'app-device-card',
   templateUrl: './device-card.component.html',
   styleUrls: ['./device-card.component.scss'],
+  standalone: true,
   imports: [IonToggle, IonLabel, IonIcon, IonCard, IonItem],
 })
-export class DeviceCardComponent implements OnInit {
-  deviceData = input<Device>();
-  deviceStatus = input<boolean>();
+export class DeviceCardComponent {
+  @Input() deviceData!: Device; // Input device object
+  @Output() statusChange = new EventEmitter<{
+    deviceId: number;
+    status: boolean;
+  }>();
 
-  statusChange = output<boolean>(); // notify parent
+  // Signal for status
+  deviceStatus = signal<boolean>(false);
 
   ngOnInit() {
-    console.log('deviceData:', this.deviceData());
-    console.log('deviceStatus:', this.deviceStatus());
+    if (this.deviceData) {
+      this.deviceStatus.set(this.deviceData.status);
+    }
   }
 
   handleToggle() {
-    const currentStatus = this.deviceStatus() ?? false;
-    const newStatus = !currentStatus;
-
-    this.statusChange.emit(newStatus);
+    const newStatus = !this.deviceStatus();
+    this.deviceStatus.set(newStatus);
+    this.statusChange.emit({
+      deviceId: Number(this.deviceData.id),
+      status: newStatus,
+    });
   }
 }

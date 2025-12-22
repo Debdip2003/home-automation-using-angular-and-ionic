@@ -1,4 +1,4 @@
-@defer(when roomData){
+@defer(when !!roomData()){
 <ion-card>
   <ion-item lines="none" [routerLink]="['room-detail', roomData()?.id]">
     <ion-icon

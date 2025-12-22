@@ -1,5 +1,5 @@
 export interface Room {
-  id: number;
+  id: number | string;
   name: string;
   deviceCount: number;
   icon: string;

@@ -2,12 +2,12 @@
 <ion-card>
   <ion-item lines="none">
     <ion-icon
-      name="{{ deviceData()?.icon }}-outline"
+      name="{{ deviceData.icon }}-outline"
       size="large"
       color="primary"
       slot="start"
     ></ion-icon>
-    <ion-label>{{ deviceData()?.name }}</ion-label>
+    <ion-label>{{ deviceData.name }}</ion-label>
     <p>{{ deviceStatus() ? "On" : "Off" }}</p>
     <ion-toggle
       mode="ios"

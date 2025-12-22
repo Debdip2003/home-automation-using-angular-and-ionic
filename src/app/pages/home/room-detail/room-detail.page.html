@@ -3,21 +3,25 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home">Back</ion-back-button>
     </ion-buttons>
-
-    <ion-title>{{ roomData()[0]?.name }}</ion-title>
+    <ion-title>{{roomId}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-row>
     @for (device of devices(); track device.id) {
-      <ion-col>
-        <app-device-card
-          [deviceData]="device"
-          [deviceStatus]="savedStatuses()[device.id]"
-          (statusChange)="updateDeviceStatus(device.id, $event)">
-        </app-device-card>
-      </ion-col>
+    <ion-col>
+      <app-device-card
+        [deviceData]="device"
+        (statusChange)="updateDeviceStatus($event.deviceId, $event.status)"
+      >
+      </app-device-card>
+    </ion-col>
     }
   </ion-row>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
+    <ion-fab-button color="danger" (click)="openModal()">
+      <ion-icon name="add" color="dark" size="large"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

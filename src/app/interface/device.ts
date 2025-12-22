@@ -1,5 +1,5 @@
 export interface Device {
-  id: number;
+  id: number | string;
   room_id: number;
   name: string;
   icon: string;

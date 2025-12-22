@@ -1,0 +1,6 @@
+top down is the project structure
+
+home page 
+room card
+room details page
+device card
