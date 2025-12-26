@@ -17,10 +17,14 @@ export const routes: Routes = [
       {
         path: 'room-detail/:id',
         loadComponent: () =>
-          import('./pages/home/room-detail/room-detail.page').then(
+          import('./pages/room-detail/room-detail.page').then(
             (m) => m.RoomDetailPage
           ),
       },
     ],
+  },
+  {
+    path: 'login-page',
+    loadComponent: () => import('./pages/login-page/login-page.page').then( m => m.LoginPagePage)
   },
 ];

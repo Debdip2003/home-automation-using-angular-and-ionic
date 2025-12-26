@@ -116,13 +116,18 @@ export class RoomDetailPage implements OnInit {
       };
       this.deviceDataService.addDevice(newDevice).subscribe({
         next: (res) => {
+          if (newDevice.name === '') {
+            this.toastMessageService.warning('Device name cannot be empty');
+            return;
+          }
           //show the toast notification
-          this.toastMessageService.success('Room added successfully!');
+          this.toastMessageService.success('Device added successfully!', 'top');
           this.devices.update((devices) => [...devices, newDevice]); //updating the ui instantly after the user have added a new device
         },
         error: (error) => {
           this.toastMessageService.error(
-            'Failed to add room. Please try again.'
+            'Failed to add room. Please try again.',
+            'top'
           );
         },
       });
