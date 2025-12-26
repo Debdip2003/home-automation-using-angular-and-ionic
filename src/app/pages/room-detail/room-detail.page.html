@@ -1,27 +1,36 @@
-<ion-header [translucent]="true">
+<!-- HEADER -->
+<ion-header translucent>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home">Back</ion-back-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{roomId}}</ion-title>
+
+    <ion-title class="ion-text-capitalize"> {{ roomId }} </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-row>
-    @for (device of devices(); track device.id) {
-    <ion-col>
-      <app-device-card
-        [deviceData]="device"
-        (statusChange)="updateDeviceStatus($event.deviceId, $event.status)"
-      >
-      </app-device-card>
-    </ion-col>
-    }
-  </ion-row>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center">
+<!-- CONTENT -->
+<ion-content fullscreen class="ion-padding">
+  <!-- DEVICES GRID -->
+  <ion-grid>
+    <ion-row>
+      @for (device of devices(); track device.id) {
+      <ion-col size="12" sizeMd="6" sizeLg="4">
+        <app-device-card
+          [deviceData]="device"
+          (statusChange)="
+              updateDeviceStatus($event.deviceId, $event.status)
+            "
+        ></app-device-card>
+      </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+
+  <!-- ADD DEVICE FAB -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="danger" (click)="openModal()">
-      <ion-icon name="add" color="dark" size="large"></ion-icon>
+      <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

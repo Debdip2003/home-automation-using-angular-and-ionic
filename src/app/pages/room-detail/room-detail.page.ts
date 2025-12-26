@@ -13,6 +13,7 @@ import {
   IonIcon,
   IonFabButton,
   ModalController,
+  IonGrid,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { Room } from 'src/app/interface/room';
@@ -29,6 +30,7 @@ import { DeviceCardComponent } from 'src/app/components/device-card/device-card.
   styleUrls: ['./room-detail.page.scss'],
   standalone: true,
   imports: [
+    IonGrid,
     IonFabButton,
     IonIcon,
     IonFab,

@@ -60,6 +60,13 @@
     },
     {
       "id": 10,
+      "name": "Kitchen",
+      "deviceCount": 0,
+      "icon": "home",
+      "selected": false
+    },
+    {
+      "id": 11,
       "name": "",
       "deviceCount": 0,
       "icon": "home",
@@ -229,6 +236,32 @@
       "name": "DIswasher",
       "icon": "home",
       "status": false
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Debdip Bhattacharya",
+      "email": "debdip@example.com",
+      "password": "debdip2003"
+    },
+    {
+      "id": 2,
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "admin123"
+    },
+    {
+      "id": "ae33",
+      "name": "Debdip Bhattacharya",
+      "email": "debdip987@gmail.com",
+      "password": "debdip2003"
+    },
+    {
+      "id": "9de7",
+      "name": "Debdip Bhattacharya",
+      "email": "debdip987@gmail.com",
+      "password": "debdip2003"
     }
   ]
 }

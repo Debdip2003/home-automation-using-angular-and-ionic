@@ -1,21 +1,31 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home">Back</ion-back-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Login</ion-title>
+    <ion-title>SignUp</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
   <div class="ion-padding ion-text-center ion-justify-content-center">
-    <!-- Login Card -->
+    <!-- signup Card -->
 
     <form
       class="ion-padding"
-      [formGroup]="loginForm"
-      (ngSubmit)="onSubmitLoginForm()"
+      [formGroup]="signupForm"
+      (ngSubmit)="onSubmitSignUpForm()"
     >
+      <!-- Name -->
+      <ion-item lines="none" class="ion-margin-top">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Name"
+          formControlName="name"
+        ></ion-input>
+      </ion-item>
+
       <!-- Email -->
       <ion-item lines="none" class="ion-margin-top">
         <ion-icon name="mail-outline" slot="start"></ion-icon>
@@ -36,11 +46,6 @@
         ></ion-input>
       </ion-item>
 
-      <!-- Forgot password -->
-      <div class="ion-text-right ion-margin-top">
-        <ion-text color="primary"> Forgot Password? </ion-text>
-      </div>
-
       <!-- Login button -->
       <ion-button
         expand="block"
@@ -48,16 +53,16 @@
         class="ion-margin-top"
         type="submit"
       >
-        Login
+        Sign Up
       </ion-button>
     </form>
 
     <!-- Register -->
     <div class="ion-margin-top">
       <ion-text>
-        Don’t have an account?
-        <ion-text color="primary" routerLink="/signup-page">
-          <strong> Register</strong>
+        Already have an account?
+        <ion-text color="primary" routerLink="/login-page">
+          <strong> Login</strong>
         </ion-text>
       </ion-text>
     </div>

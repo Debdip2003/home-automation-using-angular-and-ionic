@@ -23,6 +23,8 @@ import {
   IonFab,
   IonFabButton,
   ModalController,
+  IonTitle,
+  IonButton,
 } from '@ionic/angular/standalone';
 import { RoomCardComponent } from 'src/app/components/room-card/room-card.component';
 import { Room } from 'src/app/interface/room';
@@ -32,6 +34,8 @@ import { ToastMessage } from 'src/app/services/toast-message/toast-message';
 import { Geolocation } from '@capacitor/geolocation';
 import { home_pageLocation } from 'src/app/interface/location';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth/auth-service';
+import { User } from 'src/app/interface/user';
 
 @Component({
   selector: 'app-home',
@@ -39,22 +43,21 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
+    IonButton,
+    IonTitle,
     IonFabButton,
     IonFab,
     IonItemDivider,
     IonCol,
     IonRow,
     IonGrid,
-    IonCardContent,
     IonCardSubtitle,
     IonCardTitle,
-    IonCardHeader,
     IonCard,
     IonLabel,
     IonItem,
     IonButtons,
     IonIcon,
-    IonAvatar,
     IonHeader,
     IonToolbar,
     CommonModule,
@@ -72,6 +75,9 @@ export class HomePage implements OnInit {
   private isActive = false; //totoggle the function call when the view enter or leaves
   roomData = signal<Room[]>([]);
   currentLocation = signal<home_pageLocation | null>(null);
+  user: User | null = localStorage.getItem('loggedInUserDetails')
+    ? JSON.parse(localStorage.getItem('loggedInUserDetails')!)
+    : null;
 
   constructor(
     private modalController: ModalController,
@@ -170,8 +176,18 @@ export class HomePage implements OnInit {
     console.log(this.currentLocation());
   }
 
-  navigateToLogin() {
-    // Navigation logic can be added here if needed
-    this.router.navigate(['/login-page']);
+  navigateToLoginOrSignupOrProfile() {
+    if (this.user) {
+      this.router.navigate(['/user-profile']);
+      return;
+    } else {
+      this.router.navigate(['/login-page']);
+    }
+  }
+
+  logoutUser() {
+    this.user = null;
+    localStorage.removeItem('loggedInUserDetails');
+    this.toastMessageService.success('Logged out successfully!', 'bottom');
   }
 }

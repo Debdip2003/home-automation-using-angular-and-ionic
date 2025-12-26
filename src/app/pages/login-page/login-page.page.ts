@@ -21,6 +21,8 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { ToastMessage } from 'src/app/services/toast-message/toast-message';
+import { AuthService } from 'src/app/services/auth/auth-service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -42,16 +44,20 @@ import { ToastMessage } from 'src/app/services/toast-message/toast-message';
     IonToolbar,
     IonTitle,
     ReactiveFormsModule,
+    RouterLink,
   ],
 })
 export class LoginPagePage implements OnInit {
   //injecting the toast message service
   private toastMessageService = inject(ToastMessage);
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   loginForm!: FormGroup;
   errorMessage!: string;
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.loginForm = this.fb.group({
       email: [
         '',
@@ -96,7 +102,43 @@ export class LoginPagePage implements OnInit {
       }
       return;
     }
-    //after successful validation
-    this.toastMessageService.success('Login Successful!', 'bottom');
+
+    //calling the login user function
+    this.loginUser();
+  }
+
+  //login user function
+  loginUser() {
+    this.authService.loginUser().subscribe({
+      next: (res: any) => {
+        const user = res.find(
+          (u: any) =>
+            u.email === this.loginForm.value.email &&
+            u.password === this.loginForm.value.password
+        );
+
+        //if user is found
+        if (user) {
+          this.authService.user = user; //setting the user data in the auth service
+          localStorage.setItem('loggedInUserDetails', JSON.stringify(user)); //storing the user data in the local storage
+          this.toastMessageService.success('Login Successful!', 'bottom');
+          this.router.navigate(['/home']);
+        }
+        //if the user is not found
+        else {
+          this.toastMessageService.error(
+            'User not found! Please register first.',
+            'bottom'
+          );
+          this.router.navigate(['/signup-page']);
+        }
+      },
+      error: () => {
+        this.toastMessageService.error(
+          'Login failed! Please try again later.',
+          'bottom'
+        );
+      },
+    });
   }
 }
