@@ -22,10 +22,12 @@ export class DeviceData {
   }
 
   updateDeviceStatus(deviceId: number, newStatus: boolean) {
-    console.log(deviceId, newStatus);
-
     return this.httpClient.patch(`http://localhost:3000/devices/${deviceId}`, {
       status: newStatus,
     });
+  }
+
+  getDeviceStorageKey(roomId: string | number) {
+    return `devices_room_${roomId}`;
   }
 }

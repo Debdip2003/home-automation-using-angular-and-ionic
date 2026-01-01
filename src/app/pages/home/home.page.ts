@@ -5,19 +5,15 @@ import {
   IonContent,
   IonHeader,
   IonToolbar,
-  IonAvatar,
   IonIcon,
   IonButtons,
   IonItem,
   IonLabel,
   IonText,
   IonCard,
-  IonCardHeader,
   IonCardTitle,
   IonCardSubtitle,
-  IonCardContent,
   IonGrid,
-  IonRow,
   IonCol,
   IonItemDivider,
   IonFab,
@@ -25,6 +21,8 @@ import {
   ModalController,
   IonTitle,
   IonButton,
+  IonReorderGroup,
+  ReorderEndCustomEvent,
 } from '@ionic/angular/standalone';
 import { RoomCardComponent } from 'src/app/components/room-card/room-card.component';
 import { Room } from 'src/app/interface/room';
@@ -32,7 +30,7 @@ import { RoomData } from 'src/app/services/rooms/room-data';
 import { ModalComponentComponent } from 'src/app/components/modal-component/modal-component.component';
 import { ToastMessage } from 'src/app/services/toast-message/toast-message';
 import { Geolocation } from '@capacitor/geolocation';
-import { home_pageLocation } from 'src/app/interface/location';
+import { Home_pageLocation } from 'src/app/interface/location';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth-service';
 import { User } from 'src/app/interface/user';
@@ -43,13 +41,13 @@ import { User } from 'src/app/interface/user';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
+    IonReorderGroup,
     IonButton,
     IonTitle,
     IonFabButton,
     IonFab,
     IonItemDivider,
     IonCol,
-    IonRow,
     IonGrid,
     IonCardSubtitle,
     IonCardTitle,
@@ -71,21 +69,39 @@ export class HomePage implements OnInit {
   //injecting the dependencies from the room service
   private roomDataService = inject(RoomData);
   private toastMessageService = inject(ToastMessage);
+  private authService = inject(AuthService);
 
-  private isActive = false; //totoggle the function call when the view enter or leaves
+  //initializing the values
+  private isActive = false; //toggle the function call when the view enter or leaves
   roomData = signal<Room[]>([]);
-  currentLocation = signal<home_pageLocation | null>(null);
-  user: User | null = localStorage.getItem('loggedInUserDetails')
-    ? JSON.parse(localStorage.getItem('loggedInUserDetails')!)
-    : null;
+  currentLocation = signal<Home_pageLocation | null>(null);
+  user: User | null = null;
+  WEATHER_API_KEY = '753fba4b111462bdf282aec1ed8e5cab';
+  currentTemp = signal<number | null>(null);
 
   constructor(
     private modalController: ModalController,
     private router: Router
-  ) {}
+  ) {
+    //setting the user value from the auth service user observable
+    this.authService.user$.subscribe((userData) => {
+      this.user = userData;
+    });
+  }
 
   ngOnInit() {
-    // this.roomData.set(ROOMS);
+    //get the room details from teh location storage if available else fetch from the api
+    const storedRoom = localStorage.getItem('rooms');
+    if (storedRoom) {
+      this.roomData.set(JSON.parse(storedRoom));
+      return;
+    } else {
+      this.fetchRoomDatafromApi();
+    }
+  }
+
+  //fetching the room data from the api
+  fetchRoomDatafromApi() {
     this.roomDataService.fetchRoom().subscribe({
       next: (res) => {
         console.log(res);
@@ -103,12 +119,14 @@ export class HomePage implements OnInit {
     //getting the live location after the view has entered
     if (!this.currentLocation()) {
       this.getLiveLocationofUser();
+      this.getCurrentWeatherOfUser();
     }
   }
 
   ionViewWillLeave() {
     this.isActive = false;
     this.currentLocation.set(null); //resetting the location signal to null when the view leaves
+    this.currentTemp.set(null); //resetting the temperature signal to null when the view leaves
   }
 
   //open modal function
@@ -163,10 +181,29 @@ export class HomePage implements OnInit {
     if (!this.isActive) return null; //if isActive is false, return null
 
     //else call the function
-    const res = fetch(
+    const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
     ).then((data) => data.json());
     return res;
+  }
+
+  async getCurrentWeatherOfUser(): Promise<void | null> {
+    const {
+      coords: { latitude, longitude },
+    } = await Geolocation.getCurrentPosition();
+
+    if (!this.isActive) return null; //if isActive is false, return null
+
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${this.WEATHER_API_KEY}`
+    ).then((data) => data.json());
+
+    //converting the temperature from kelvin to celsius and setting the value to the currentTemp signal
+    const tempCelsius = res.main.temp - 273.15;
+    this.currentTemp.set(tempCelsius);
+    console.log(this.currentTemp());
+
+    return;
   }
 
   //set the current location signal
@@ -186,8 +223,34 @@ export class HomePage implements OnInit {
   }
 
   logoutUser() {
-    this.user = null;
-    localStorage.removeItem('loggedInUserDetails');
+    this.authService.logoutUSer();
     this.toastMessageService.success('Logged out successfully!', 'bottom');
+  }
+
+  //handle the reorder end event of the room cards
+  handleReorderEnd(event: ReorderEndCustomEvent) {
+    const reorderedRoomCards = event.detail.complete(this.roomData());
+    this.roomData.set(reorderedRoomCards);
+    localStorage.setItem('rooms', JSON.stringify(reorderedRoomCards));
+    event.detail.complete();
+  }
+
+  //handle the delete room event from the room card component
+  handleDeleteRoom(roomId: number | string | undefined) {
+    this.roomDataService.deleteRoom(roomId).subscribe({
+      next: () => {
+        this.fetchRoomDatafromApi(); //refresh the room list after deletion
+        this.toastMessageService.success(
+          'Room deleted successfully!',
+          'bottom'
+        );
+      },
+      error: () => {
+        this.toastMessageService.error(
+          'Failed to delete room. Please try again.',
+          'bottom'
+        );
+      },
+    });
   }
 }

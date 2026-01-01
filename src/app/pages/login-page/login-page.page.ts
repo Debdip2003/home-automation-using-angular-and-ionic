@@ -119,8 +119,9 @@ export class LoginPagePage implements OnInit {
 
         //if user is found
         if (user) {
-          this.authService.user = user; //setting the user data in the auth service
+          this.authService.setUser(user); //setting the user data in the auth service
           localStorage.setItem('loggedInUserDetails', JSON.stringify(user)); //storing the user data in the local storage
+
           this.toastMessageService.success('Login Successful!', 'bottom');
           this.router.navigate(['/home']);
         }
@@ -130,7 +131,10 @@ export class LoginPagePage implements OnInit {
             'User not found! Please register first.',
             'bottom'
           );
-          this.router.navigate(['/signup-page']);
+          //navigating to signup page after 2 seconds
+          setTimeout(() => {
+            this.router.navigate(['/signup-page']);
+          }, 2000);
         }
       },
       error: () => {

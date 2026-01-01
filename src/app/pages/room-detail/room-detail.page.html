@@ -13,7 +13,10 @@
 <ion-content fullscreen class="ion-padding">
   <!-- DEVICES GRID -->
   <ion-grid>
-    <ion-row>
+    <ion-reorder-group
+      [disabled]="false"
+      (ionItemReorder)="handleReorderEnd($any($event))"
+    >
       @for (device of devices(); track device.id) {
       <ion-col size="12" sizeMd="6" sizeLg="4">
         <app-device-card
@@ -24,7 +27,7 @@
         ></app-device-card>
       </ion-col>
       }
-    </ion-row>
+    </ion-reorder-group>
   </ion-grid>
 
   <!-- ADD DEVICE FAB -->

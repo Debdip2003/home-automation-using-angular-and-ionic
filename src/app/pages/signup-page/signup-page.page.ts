@@ -134,10 +134,13 @@ export class SignupPagePage implements OnInit {
         }
 
         //if the user is not signed in, proceed with registration
-        this.authService.user = newUser; //setting the user data in the auth service
+        this.authService.setUser(newUser); //setting the user data in the auth service
         localStorage.setItem('loggedInUserDetails', JSON.stringify(newUser)); //storing the user data in the local storage
         this.toastMessageService.success('Registration Successful!', 'bottom');
-        this.routerService.navigate(['/home']);
+        //navigating to the home page after 2 seconds
+        setTimeout(() => {
+          this.routerService.navigate(['/home']);
+        }, 2000);
         this.signupForm.reset();
       },
       error: () => {

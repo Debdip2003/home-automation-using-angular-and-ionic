@@ -30,8 +30,13 @@
   <!-- WELCOME -->
   <ion-item lines="none">
     <ion-label>
-      <h1 class="ion-no-margin">Welcome 👋</h1>
+      @if(!user){
+      <h1 class="ion-no-margin font-normal">Welcome to Smart Home</h1>
+      <p class="ion-text-muted">Please log in to access your dashboard</p>
+      }@else {
+      <h1 class="ion-no-margin font-normal">Welcome {{user.name}}</h1>
       <p class="ion-text-muted">Your smart home dashboard</p>
+      }
     </ion-label>
   </ion-item>
 
@@ -53,7 +58,7 @@
       </ion-label>
 
       <ion-text slot="end" color="secondary">
-        <h1 class="ion-no-margin">22° C</h1>
+        <h1 class="ion-no-margin">{{ currentTemp() | number:'1.0-0' }}° C</h1>
       </ion-text>
     </ion-item>
   </ion-card>
@@ -65,13 +70,19 @@
 
   <!-- ROOMS GRID -->
   <ion-grid>
-    <ion-row>
+    <ion-reorder-group
+      [disabled]="false"
+      (ionReorderEnd)="handleReorderEnd($any($event))"
+    >
       @for (room of roomData(); track $index) {
       <ion-col size="12" sizeMd="6" sizeLg="4">
-        <app-room-card [roomData]="room"></app-room-card>
+        <app-room-card
+          [roomData]="room"
+          (deleteRoom)="handleDeleteRoom(room.id)"
+        ></app-room-card>
       </ion-col>
       }
-    </ion-row>
+    </ion-reorder-group>
   </ion-grid>
 
   <!-- ADD ROOM FAB -->

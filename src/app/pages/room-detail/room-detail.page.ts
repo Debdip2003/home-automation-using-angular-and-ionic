@@ -14,6 +14,8 @@ import {
   IonFabButton,
   ModalController,
   IonGrid,
+  IonReorderGroup,
+  ReorderEndCustomEvent,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { Room } from 'src/app/interface/room';
@@ -30,13 +32,13 @@ import { DeviceCardComponent } from 'src/app/components/device-card/device-card.
   styleUrls: ['./room-detail.page.scss'],
   standalone: true,
   imports: [
+    IonReorderGroup,
     IonGrid,
     IonFabButton,
     IonIcon,
     IonFab,
     IonTitle,
     IonCol,
-    IonRow,
     IonBackButton,
     IonButtons,
     IonContent,
@@ -60,20 +62,30 @@ export class RoomDetailPage implements OnInit {
 
   ngOnInit() {
     this.roomId = this.route.snapshot.paramMap.get('id');
+    if (!this.roomId) return;
 
-    //fetching the device array on the basis of roomId
-    if (this.roomId) {
+    //checking if there is any stored device data in local storage
+    const key = this.deviceDataService.getDeviceStorageKey(this.roomId);
+    const storedDevices = localStorage.getItem(key);
+
+    //if there is stored data, then use it
+    if (storedDevices) {
+      this.devices.set(JSON.parse(storedDevices));
+    } else {
+      //fetching the device array on the basis of roomId
       this.fetchDeviceByRoomId(this.roomId);
     }
-
-    console.log(this.roomData());
   }
 
   // Called when a child component toggles a device
   updateDeviceStatus(deviceId: number, newStatus: boolean) {
     this.deviceDataService.updateDeviceStatus(deviceId, newStatus).subscribe({
       next: () => {
-        this.fetchDeviceByRoomId(this.roomId!);
+        this.devices.update((devices) =>
+          devices.map((device) =>
+            device.id === deviceId ? { ...device, status: newStatus } : device
+          )
+        );
       },
       error: (err) => {
         console.error(err);
@@ -134,5 +146,17 @@ export class RoomDetailPage implements OnInit {
         },
       });
     }
+  }
+
+  //handle the reorder end event of the room cards
+  handleReorderEnd(event: ReorderEndCustomEvent) {
+    if (!this.roomId) return;
+
+    const reorderedDeviceCards = event.detail.complete(this.devices());
+    this.devices.set(reorderedDeviceCards); //setting the reordered device cards
+
+    //update the local storage with the new order
+    const key = this.deviceDataService.getDeviceStorageKey(this.roomId);
+    localStorage.setItem(key, JSON.stringify(reorderedDeviceCards));
   }
 }

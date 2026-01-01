@@ -1,4 +1,4 @@
-export interface home_pageLocation {
+export interface Home_pageLocation {
   display_name: string;
   lat: string;
   lon: string;

@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import {
   IonItem,
-  IonCard,
   IonIcon,
   IonLabel,
   IonToggle,
+  IonReorder,
 } from '@ionic/angular/standalone';
 import { Device } from 'src/app/interface/device';
 
@@ -13,7 +13,7 @@ import { Device } from 'src/app/interface/device';
   templateUrl: './device-card.component.html',
   styleUrls: ['./device-card.component.scss'],
   standalone: true,
-  imports: [IonToggle, IonLabel, IonIcon, IonCard, IonItem],
+  imports: [IonReorder, IonToggle, IonLabel, IonIcon, IonItem],
 })
 export class DeviceCardComponent {
   @Input() deviceData!: Device; // Input device object
